@@ -1,0 +1,139 @@
+package com.github.ynverxe.nbt_structure.nbt;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.Supplier;
+
+@SuppressWarnings({"rawtypes", "unchecked"})
+public interface TagScheme<T, N extends NBT>  {
+
+    @NotNull String name();
+
+    @NotNull TagType<N> type();
+
+    @NotNull Optional<N> createDefaultNBT();
+
+    @NotNull Optional<T> createDefaultInterpretation();
+
+    @Nullable Interpreter<T, N> defaultInterpreter();
+
+    @NotNull List<String> path();
+
+    @NotNull Builder<T, N> builder(@NotNull String key);
+
+    @NotNull Builder<T, N> builder();
+
+    default @NotNull String fullKey() {
+        StringBuilder builder = new StringBuilder();
+        for (String s : path()) {
+            builder.append(s).append(".");
+        }
+        builder.append(name());
+        return builder.toString();
+    }
+
+    default <S, SN extends NBT> @NotNull Builder<S, N> withType(@NotNull TagType<SN> type) {
+        return (Builder<S, N>) new Builder<>(name(), type())
+                .path(path());
+    }
+
+    default <S> @NotNull Builder<S, N> withInterpretationType() {
+        return (Builder<S, N>) new Builder<>(name(), type())
+                .path(path());
+    }
+
+    default @NotNull Optional<T> interpretValue(N nbt) {
+        Interpreter<T, N> interpreter = defaultInterpreter();
+
+        if (nbt == null) nbt = createDefaultNBT().orElseThrow(() -> new IllegalArgumentException("null nbt"));
+
+        if (interpreter != null) return Optional.of(interpreter.interpretIt(nbt));
+
+        return Optional.empty();
+    }
+
+    static @NotNull <T, N extends NBT> TagScheme<T, N> of(@NotNull String key, @NotNull TagType<N> type) {
+        return (TagScheme<T, N>) builder(key, null, type)
+                .resolvePathInKey()
+                .build();
+    }
+
+    @SuppressWarnings("unused")
+    static @NotNull <T, N extends NBT> Builder<T, N> builder(
+            @NotNull String key,
+            @Nullable Class<T> interpretationClass,
+            @NotNull TagType<N> type
+    ) {
+        return new Builder<>(
+                Objects.requireNonNull(key, "key"),
+                Objects.requireNonNull(type, "type")
+        );
+    }
+
+    class Builder<T, N extends NBT> {
+        private final TagType<N> type;
+        private final List<String> path = new ArrayList<>();
+        private String key;
+        private Supplier<N> defaultNBTCreator;
+        private Supplier<T> defaultInterpretationCreator;
+        private Interpreter<T, N> interpreter;
+
+        public Builder(String key, TagType<N> type) {
+            this.key = key;
+            this.type = type;
+        }
+
+        public @NotNull Builder<T, N> defaultNBTCreator(@NotNull Supplier<N> defaultNBTCreator) {
+            this.defaultNBTCreator = defaultNBTCreator;
+            return this;
+        }
+
+        public @NotNull Builder<T, N> defaultInterpretationCreator(@NotNull Supplier<T> defaultInterpretationCreator) {
+            this.defaultInterpretationCreator = defaultInterpretationCreator;
+            return this;
+        }
+
+        public @NotNull Builder<T, N> interpreter(@NotNull Interpreter<T, N> interpreter) {
+            this.interpreter = interpreter;
+            return this;
+        }
+
+        public @NotNull Builder<T, N> path(List<String> path) {
+            this.path.clear();
+            this.path.addAll(path);
+            return this;
+        }
+
+        public @NotNull Builder<T, N> path(@NotNull String... path) {
+            this.path.clear();
+            this.path.addAll(Arrays.asList(path));
+            return this;
+        }
+
+        public @NotNull Builder<T, N> resolvePathInKey() {
+            String[] separated = key.split("\\.");
+
+            if (separated.length <= 0) return this;
+
+            int i;
+            for (i = 0; i < separated.length - 1; i++) {
+                String value = separated[i];
+                separated[i] = null;
+                this.path.add(value);
+            }
+
+            this.key = separated[i];
+            return this;
+        }
+
+        public @NotNull TagScheme<T, N> build() {
+            return new TagSchemeImpl<>(key, type, defaultNBTCreator, defaultInterpretationCreator, interpreter, Collections.unmodifiableList(path));
+        }
+    }
+
+    interface Interpreter<T, N extends NBT> {
+        @NotNull T interpretIt(@NotNull N nbt);
+    }
+}

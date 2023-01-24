@@ -1,0 +1,17 @@
+com\github\ynverxe\nbt_structure\nbt\NBTList.class
+com\github\ynverxe\nbt_structure\nbt\TagScheme$Builder.class
+com\github\ynverxe\nbt_structure\nbt\NBTEnd.class
+com\github\ynverxe\nbt_structure\nbt\tree\TreeSearchUtil.class
+com\github\ynverxe\nbt_structure\nbt\TagSchemeImpl.class
+com\github\ynverxe\nbt_structure\nbt\NBTReadable.class
+com\github\ynverxe\nbt_structure\nbt\tree\TreeNBTContainer.class
+com\github\ynverxe\nbt_structure\nbt\TagScheme.class
+com\github\ynverxe\nbt_structure\nbt\NBTArray.class
+com\github\ynverxe\nbt_structure\nbt\NBTCompound.class
+com\github\ynverxe\nbt_structure\nbt\exception\InvalidNBTTypeException.class
+com\github\ynverxe\nbt_structure\nbt\NBTWritable.class
+com\github\ynverxe\nbt_structure\nbt\NBTContainer.class
+com\github\ynverxe\nbt_structure\nbt\NBT.class
+com\github\ynverxe\nbt_structure\nbt\tree\TreeNBTContainerHandler.class
+com\github\ynverxe\nbt_structure\nbt\TagType.class
+com\github\ynverxe\nbt_structure\nbt\TagScheme$Interpreter.class
