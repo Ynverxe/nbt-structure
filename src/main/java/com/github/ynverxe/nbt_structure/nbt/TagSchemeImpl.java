@@ -11,6 +11,7 @@ public class TagSchemeImpl<T, N extends NBT<?>> implements TagScheme<T, N> {
 
     private final String key;
     private final TagType<N> type;
+    private final Class<T> interpretationType;
     private final Supplier<N> defaultNBTCreator;
     private final Supplier<T> defaultInterpretationCreator;
     private final Interpreter<T, N> interpreter;
@@ -19,6 +20,7 @@ public class TagSchemeImpl<T, N extends NBT<?>> implements TagScheme<T, N> {
     TagSchemeImpl(
             String key,
             TagType<N> type,
+            Class<T> interpretationType,
             Supplier<N> defaultNBTCreator,
             Supplier<T> defaultInterpretationCreator,
             Interpreter<T, N> interpreter,
@@ -26,6 +28,7 @@ public class TagSchemeImpl<T, N extends NBT<?>> implements TagScheme<T, N> {
     ) {
         this.key = key;
         this.type = type;
+        this.interpretationType = interpretationType;
         this.defaultNBTCreator = defaultNBTCreator;
         this.defaultInterpretationCreator = defaultInterpretationCreator;
         this.interpreter = interpreter;
@@ -40,6 +43,11 @@ public class TagSchemeImpl<T, N extends NBT<?>> implements TagScheme<T, N> {
     @Override
     public @NotNull TagType<N> type() {
         return type;
+    }
+
+    @Override
+    public @Nullable Class<T> interpretationType() {
+        return interpretationType;
     }
 
     @Override
@@ -71,11 +79,11 @@ public class TagSchemeImpl<T, N extends NBT<?>> implements TagScheme<T, N> {
 
     @Override
     public @NotNull Builder<T, N> builder(@NotNull String key) {
-        Builder<T, N> builder = new Builder<>(key, type);
+        Builder<T, N> builder = new Builder<>(key, type, interpretationType);
 
         builder.path(path);
-        if (defaultNBTCreator != null) builder.defaultNBTCreator(defaultNBTCreator);
-        if (defaultInterpretationCreator != null) builder.defaultInterpretationCreator(defaultInterpretationCreator);
+        if (defaultNBTCreator != null) builder.auxiliaryNBTSupplier(defaultNBTCreator);
+        if (defaultInterpretationCreator != null) builder.auxiliaryInterpretationSupplier(defaultInterpretationCreator);
         if (interpreter != null) builder.interpreter(interpreter);
 
         return builder;

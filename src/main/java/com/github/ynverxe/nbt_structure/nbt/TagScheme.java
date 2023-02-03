@@ -6,12 +6,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked", "unused", "UnusedReturnValue"})
 public interface TagScheme<T, N extends NBT>  {
 
     @NotNull String name();
 
     @NotNull TagType<N> type();
+
+    @Nullable Class<T> interpretationType();
 
     @NotNull Optional<N> createDefaultNBT();
 
@@ -35,12 +37,12 @@ public interface TagScheme<T, N extends NBT>  {
     }
 
     default <S, SN extends NBT> @NotNull Builder<S, N> withType(@NotNull TagType<SN> type) {
-        return (Builder<S, N>) new Builder<>(name(), type())
+        return (Builder<S, N>) new Builder<>(name(), type(), interpretationType())
                 .path(path());
     }
 
     default <S> @NotNull Builder<S, N> withInterpretationType() {
-        return (Builder<S, N>) new Builder<>(name(), type())
+        return (Builder<S, N>) new Builder<>(name(), type(), interpretationType())
                 .path(path());
     }
 
@@ -68,30 +70,34 @@ public interface TagScheme<T, N extends NBT>  {
     ) {
         return new Builder<>(
                 Objects.requireNonNull(key, "key"),
-                Objects.requireNonNull(type, "type")
+                Objects.requireNonNull(type, "type"),
+                Objects.requireNonNull(interpretationClass, "interpretationClass")
         );
     }
 
     class Builder<T, N extends NBT> {
+
         private final TagType<N> type;
+        private final Class<T> interpretationType;
         private final List<String> path = new ArrayList<>();
         private String key;
-        private Supplier<N> defaultNBTCreator;
-        private Supplier<T> defaultInterpretationCreator;
+        private Supplier<N> auxiliaryNBTSupplier;
+        private Supplier<T> auxiliaryInterpretationSupplier;
         private Interpreter<T, N> interpreter;
 
-        public Builder(String key, TagType<N> type) {
+        public Builder(String key, TagType<N> type, Class<T> interpretationType) {
             this.key = key;
             this.type = type;
+            this.interpretationType = interpretationType;
         }
 
-        public @NotNull Builder<T, N> defaultNBTCreator(@NotNull Supplier<N> defaultNBTCreator) {
-            this.defaultNBTCreator = defaultNBTCreator;
+        public @NotNull Builder<T, N> auxiliaryNBTSupplier(@NotNull Supplier<N> nbtSupplier) {
+            this.auxiliaryNBTSupplier = nbtSupplier;
             return this;
         }
 
-        public @NotNull Builder<T, N> defaultInterpretationCreator(@NotNull Supplier<T> defaultInterpretationCreator) {
-            this.defaultInterpretationCreator = defaultInterpretationCreator;
+        public @NotNull Builder<T, N> auxiliaryInterpretationSupplier(@NotNull Supplier<T> auxiliaryInterpretationSupplier) {
+            this.auxiliaryInterpretationSupplier = auxiliaryInterpretationSupplier;
             return this;
         }
 
@@ -129,7 +135,7 @@ public interface TagScheme<T, N extends NBT>  {
         }
 
         public @NotNull TagScheme<T, N> build() {
-            return new TagSchemeImpl<>(key, type, defaultNBTCreator, defaultInterpretationCreator, interpreter, Collections.unmodifiableList(path));
+            return new TagSchemeImpl<>(key, type, interpretationType, auxiliaryNBTSupplier, auxiliaryInterpretationSupplier, interpreter, Collections.unmodifiableList(path));
         }
     }
 
