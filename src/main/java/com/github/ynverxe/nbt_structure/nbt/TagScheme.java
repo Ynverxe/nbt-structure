@@ -56,6 +56,16 @@ public interface TagScheme<T, N extends NBT>  {
                 .build();
     }
 
+    @SuppressWarnings("unchecked")
+    static @NotNull <T, N extends NBT<T>> TagScheme<T, N> primitive(
+            @NotNull String key,
+            @NotNull TagType<N> type
+    ) {
+        return (TagScheme<T, N>) builder(key, type.javaType(), type)
+                .resolvePathInKey()
+                .build();
+    }
+
     @SuppressWarnings("unused")
     static @NotNull <T, N extends NBT> Builder<T, N> builder(
             @NotNull String key,
