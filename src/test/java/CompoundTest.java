@@ -22,7 +22,7 @@ public class CompoundTest {
         String nameKey = "compound.compound.tag";
 
         handler.write(nameKey, new NBT<>("Ynverxe"));
-        TagScheme<String, NBT<String>> tagScheme = TagScheme.of(nameKey, TagType.STRING);
+        TagScheme<String, NBT<String>> tagScheme = TagScheme.primitive(nameKey, TagType.STRING);
         assertEquals("Ynverxe", handler.readValue(tagScheme.fullKey()));
     }
 }
