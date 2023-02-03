@@ -7,7 +7,7 @@ public interface NBTReadable {
     <N extends NBT<?>> N read(@NotNull String key);
 
     default <N extends NBT<?>> N read(@NotNull String key, @NotNull TagType<N> type) {
-        return read(TagScheme.of(key, type));
+        return type.cast(read(key));
     }
 
     default <N extends NBT<?>> N read(@NotNull TagScheme<?, N> tagScheme) {
