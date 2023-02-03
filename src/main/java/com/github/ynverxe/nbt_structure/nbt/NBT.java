@@ -71,6 +71,10 @@ public class NBT<T> implements Cloneable {
     public static @NotNull <T extends NBT<?>> T byPossibleRawRepresenter(@NotNull Object value) {
         if (value instanceof NBT) return (T) value;
 
+        if (value instanceof NBTConvertible) {
+            return (T) ((NBTConvertible<?>) value).toNBT();
+        }
+
         if (value instanceof List) {
             NBTList list = new NBTList();
 
