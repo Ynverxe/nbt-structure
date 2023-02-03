@@ -46,7 +46,7 @@ public class TagSchemeImpl<T, N extends NBT<?>> implements TagScheme<T, N> {
     }
 
     @Override
-    public @Nullable Class<T> interpretationType() {
+    public @NotNull Class<T> interpretationType() {
         return interpretationType;
     }
 

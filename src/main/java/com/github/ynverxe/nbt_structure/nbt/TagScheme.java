@@ -6,14 +6,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
-@SuppressWarnings({"rawtypes", "unchecked", "unused", "UnusedReturnValue"})
+@SuppressWarnings({"rawtypes", "unused", "UnusedReturnValue"})
 public interface TagScheme<T, N extends NBT>  {
 
     @NotNull String name();
 
     @NotNull TagType<N> type();
 
-    @Nullable Class<T> interpretationType();
+    @NotNull Class<T> interpretationType();
 
     @NotNull Optional<N> createDefaultNBT();
 
@@ -46,8 +46,12 @@ public interface TagScheme<T, N extends NBT>  {
         return Optional.empty();
     }
 
-    static @NotNull <T, N extends NBT> TagScheme<T, N> of(@NotNull String key, @NotNull TagType<N> type) {
-        return (TagScheme<T, N>) builder(key, null, type)
+    static @NotNull <T, N extends NBT> TagScheme<T, N> of(
+            @NotNull String key,
+            @NotNull Class<T> interpretationClass,
+            @NotNull TagType<N> type
+    ) {
+        return builder(key, interpretationClass, type)
                 .resolvePathInKey()
                 .build();
     }
