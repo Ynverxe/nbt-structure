@@ -15,4 +15,9 @@ public class NBTArray<T> extends NBT<T[]> {
     public @NotNull List<T> asList() {
         return new ArrayList<>(Arrays.asList(value));
     }
+
+    @Override
+    public String toString() {
+        return asList().toString();
+    }
 }
