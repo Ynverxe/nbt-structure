@@ -11,11 +11,11 @@ public interface NBTContainer extends NBTWritable, NBTReadable {
 
     default @NotNull NBTCompound toCompound() {
         NBTCompound compound = new NBTCompound();
-        forEach((k, v) -> compound.write(k, v.clone()));
+        performFor((k, v) -> compound.write(k, v.clone()));
         return compound;
     }
 
-    default void forEach(@NotNull BiConsumer<String, NBT<?>> consumer) {
+    default void performFor(@NotNull BiConsumer<String, NBT<?>> consumer) {
         keys().forEach(key -> consumer.accept(key, read(key)));
     }
 }
