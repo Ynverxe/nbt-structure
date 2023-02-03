@@ -36,16 +36,6 @@ public interface TagScheme<T, N extends NBT>  {
         return builder.toString();
     }
 
-    default <S, SN extends NBT> @NotNull Builder<S, N> withType(@NotNull TagType<SN> type) {
-        return (Builder<S, N>) new Builder<>(name(), type(), interpretationType())
-                .path(path());
-    }
-
-    default <S> @NotNull Builder<S, N> withInterpretationType() {
-        return (Builder<S, N>) new Builder<>(name(), type(), interpretationType())
-                .path(path());
-    }
-
     default @NotNull Optional<T> interpretValue(N nbt) {
         Interpreter<T, N> interpreter = defaultInterpreter();
 
