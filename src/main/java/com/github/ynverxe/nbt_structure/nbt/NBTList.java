@@ -4,14 +4,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-@SuppressWarnings({"rawtypes"})
-public class NBTList extends NBT<List<NBT>> implements Cloneable {
+@SuppressWarnings({"rawtypes", "unused", "UnusedReturnValue"})
+public class NBTList extends NBT<List<NBT>> implements Cloneable, Iterable<NBT> {
 
     public NBTList() {
-        this(new CopyOnWriteArrayList<>());
+        this(new ArrayList<>());
     }
 
     protected NBTList(List<NBT> value) {
@@ -61,5 +60,14 @@ public class NBTList extends NBT<List<NBT>> implements Cloneable {
         return value.stream()
                 .map(NBT::normalize)
                 .collect(Collectors.toList());
+    }
+
+    public int size() {
+        return value.size();
+    }
+
+    @Override
+    public @NotNull Iterator<NBT> iterator() {
+        return value.iterator();
     }
 }
