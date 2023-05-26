@@ -26,6 +26,14 @@ public interface NBTReadable {
         return (T) read(key).value();
     }
 
+    default <T> @Nullable T readValue(@NotNull String key, @NotNull TagType<NBT<T>> type) {
+        NBT<?> found = read(key);
+
+        if (found == null) return null;
+
+        return found.getAs(type);
+    }
+
     default @Nullable Number readNumber(@NotNull String key) {
         return readValue(key);
     }

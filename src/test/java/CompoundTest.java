@@ -1,5 +1,6 @@
 import com.github.ynverxe.nbt_structure.nbt.NBT;
 import com.github.ynverxe.nbt_structure.nbt.NBTCompound;
+import com.github.ynverxe.nbt_structure.nbt.TagType;
 import com.github.ynverxe.nbt_structure.nbt.tree.TreeNBTContainerHandler;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ public class CompoundTest {
     public void testCompoundTag() {
         NBTCompound compoundTag = new NBTCompound();
         compoundTag.write("name", new NBT<>("Ynverxe"));
-        assertEquals("Ynverxe", compoundTag.readValue("name"));
+        assertEquals("Ynverxe", compoundTag.readValue("name", TagType.STRING));
     }
 
     @Test
@@ -21,6 +22,6 @@ public class CompoundTest {
         String nameKey = "compound.compound.tag";
 
         handler.write(nameKey, new NBT<>("Ynverxe"));
-        assertEquals("Ynverxe", handler.readValue(nameKey));
+        assertEquals("Ynverxe", handler.readValue(nameKey, TagType.STRING));
     }
 }
