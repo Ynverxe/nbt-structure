@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 public interface NBTReadable {
@@ -16,6 +17,10 @@ public interface NBTReadable {
         if (found == null) return null;
 
         return new Tag<>(key, found);
+    }
+
+    default <N extends NBT<?>> @NotNull Optional<N> readOptional(@NotNull String key, @NotNull TagType<N> type) {
+        return Optional.ofNullable(read(key, type));
     }
 
     default <N extends NBT<?>> @Nullable N read(@NotNull String key, @NotNull TagType<N> type) {
@@ -39,6 +44,10 @@ public interface NBTReadable {
         V found = readValue(key, type);
 
         return found != null ? parser.apply(found) : null;
+    }
+
+    default <V> @NotNull Optional<V> readOptionalValue(@NotNull String key, @NotNull TagType<NBT<V>> type) {
+        return Optional.ofNullable(readValue(key, type));
     }
 
     default @Nullable Number readNumber(@NotNull String key) {
