@@ -3,6 +3,7 @@ package com.github.ynverxe.nbt_structure.nbt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public interface NBTReadable {
@@ -34,8 +35,18 @@ public interface NBTReadable {
         return found.getAs(type);
     }
 
+    default <V, T> T parseValue(@NotNull String key, @NotNull TagType<NBT<V>> type, @NotNull Function<V, T> parser) {
+        V found = readValue(key, type);
+
+        return found != null ? parser.apply(found) : null;
+    }
+
     default @Nullable Number readNumber(@NotNull String key) {
         return readValue(key);
+    }
+
+    default boolean readBoolean(@NotNull String key) {
+        return Objects.equals(readValue(key), (byte) 1);
     }
 
     default <T, N extends NBT<?>> @Nullable T interpret(@NotNull String key, @Nullable TagType<N> type, @NotNull Function<N, T> interpreter) {
