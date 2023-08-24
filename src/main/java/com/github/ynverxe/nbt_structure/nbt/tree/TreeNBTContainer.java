@@ -5,9 +5,10 @@ import org.jetbrains.annotations.NotNull;
 
 public interface TreeNBTContainer extends NBTContainer {
 
-    @NotNull TreeNBTContainer createNewBranch();
+  @NotNull
+  TreeNBTContainer createNewBranch();
 
-    default @NotNull TreeNBTContainerHandler treeHandler() {
-        return new TreeNBTContainerHandler(this);
-    }
+  default @NotNull TreeNBTContainerHandler treeHandler() {
+    return new TreeNBTContainerHandler(this);
+  }
 }

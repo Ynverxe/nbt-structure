@@ -1,117 +1,126 @@
 package com.github.ynverxe.nbt_structure.nbt.io;
 
 import com.github.ynverxe.nbt_structure.nbt.*;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import org.jetbrains.annotations.NotNull;
 
 public final class NBTIOUtil {
 
-    private NBTIOUtil() {}
+  private NBTIOUtil() {}
 
-    public static void saveCompound(NBTCompound compound, boolean compress, File file) throws IOException {
-        OutputStream outputStream = Files.newOutputStream(file.toPath());
+  public static void saveCompound(NBTCompound compound, boolean compress, File file)
+      throws IOException {
+    OutputStream outputStream = Files.newOutputStream(file.toPath());
 
-        if (compress) {
-            outputStream = new GZIPOutputStream(outputStream);
-        }
-
-        try (DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
-            writeUnnamedTag(compound, dataOutputStream);
-        }
+    if (compress) {
+      outputStream = new GZIPOutputStream(outputStream);
     }
 
-    public static @NotNull NBTCompound readCompound(File file) throws IOException {
-        InputStream inputStream = Files.newInputStream(file.toPath());
+    try (DataOutputStream dataOutputStream = new DataOutputStream(outputStream)) {
+      writeUnnamedTag(compound, dataOutputStream);
+    }
+  }
 
-        // detect gzip compression
-        try {
-            inputStream = new GZIPInputStream(inputStream);
-        } catch (IOException ignored) {
-            inputStream.close();
-            inputStream = Files.newInputStream(file.toPath());
-        }
+  public static @NotNull NBTCompound readCompound(File file) throws IOException {
+    InputStream inputStream = Files.newInputStream(file.toPath());
 
-        try (DataInputStream dataInputStream = new DataInputStream(inputStream)) {
-            return (NBTCompound) readUnnamedTag(dataInputStream);
-        }
+    // detect gzip compression
+    try {
+      inputStream = new GZIPInputStream(inputStream);
+    } catch (IOException ignored) {
+      inputStream.close();
+      inputStream = Files.newInputStream(file.toPath());
     }
 
-    public static void writeUnnamedTag(@NotNull NBT<?> nbt, @NotNull DataOutput dataOutput) throws IOException {
-        writeNamedTag("", nbt, dataOutput, 0);
+    try (DataInputStream dataInputStream = new DataInputStream(inputStream)) {
+      return (NBTCompound) readUnnamedTag(dataInputStream);
+    }
+  }
+
+  public static void writeUnnamedTag(@NotNull NBT<?> nbt, @NotNull DataOutput dataOutput)
+      throws IOException {
+    writeNamedTag("", nbt, dataOutput, 0);
+  }
+
+  public static void writeUnnamedTag(
+      @NotNull NBT<?> nbt, @NotNull DataOutput dataOutput, int valueDepth) throws IOException {
+    writeNamedTag("", nbt, dataOutput, valueDepth);
+  }
+
+  public static void writeNamedTag(
+      @NotNull String key, @NotNull NBT<?> nbt, @NotNull DataOutput dataOutput) throws IOException {
+    TagType<?> type = nbt.type();
+
+    dataOutput.write(type.id());
+    if (type == TagType.END) {
+      return;
     }
 
-    public static void writeUnnamedTag(@NotNull NBT<?> nbt, @NotNull DataOutput dataOutput, int valueDepth) throws IOException {
-        writeNamedTag("", nbt, dataOutput, valueDepth);
+    dataOutput.writeUTF(key);
+    type.nbtioHandler().write(nbt, dataOutput, 0);
+  }
+
+  public static void writeNamedTag(
+      @NotNull String key, @NotNull NBT<?> nbt, @NotNull DataOutput dataOutput, int valueDepth)
+      throws IOException {
+    TagType<?> type = nbt.type();
+
+    dataOutput.write(type.id());
+    if (type == TagType.END) {
+      return;
     }
 
-    public static void writeNamedTag(@NotNull String key, @NotNull NBT<?> nbt, @NotNull DataOutput dataOutput) throws IOException {
-        TagType<?> type = nbt.type();
+    dataOutput.writeUTF(key);
+    type.nbtioHandler().write(nbt, dataOutput, valueDepth);
+  }
 
-        dataOutput.write(type.id());
-        if (type == TagType.END) {
-            return;
-        }
+  public static NBT<?> readUnnamedTag(@NotNull DataInput dataInput) throws IOException {
+    return readUnnamedTag(dataInput, 0);
+  }
 
-        dataOutput.writeUTF(key);
-        type.nbtioHandler().write(nbt, dataOutput, 0);
-    }
+  public static NBT<?> readUnnamedTag(@NotNull DataInput dataInput, int valueDepth)
+      throws IOException {
+    byte id = dataInput.readByte();
 
-    public static void writeNamedTag(@NotNull String key, @NotNull NBT<?> nbt, @NotNull DataOutput dataOutput, int valueDepth) throws IOException {
-        TagType<?> type = nbt.type();
+    if (id == 0) return new NBT<>(NBTEnd.VALUE);
 
-        dataOutput.write(type.id());
-        if (type == TagType.END) {
-            return;
-        }
+    TagType<?> type = TagType.byId(id);
 
-        dataOutput.writeUTF(key);
-        type.nbtioHandler().write(nbt, dataOutput, valueDepth);
-    }
+    if (type == null) throw new RuntimeException("Unknown tag id " + id);
 
-    public static NBT<?> readUnnamedTag(@NotNull DataInput dataInput) throws IOException {
-        return readUnnamedTag(dataInput, 0);
-    }
+    dataInput.readUTF(); // ignore
 
-    public static NBT<?> readUnnamedTag(@NotNull DataInput dataInput, int valueDepth) throws IOException {
-        byte id = dataInput.readByte();
+    return readValue(type, dataInput, valueDepth);
+  }
 
-        if (id == 0) return new NBT<>(NBTEnd.VALUE);
+  public static Tag<?> readNamedTag(@NotNull DataInput dataInput, int valueDepth)
+      throws IOException {
+    byte id = dataInput.readByte();
 
-        TagType<?> type = TagType.byId(id);
+    if (id == 0) return new Tag<>("", new NBT<>(NBTEnd.VALUE));
 
-        if (type == null) throw new RuntimeException("Unknown tag id " + id);
+    TagType<?> type = TagType.byId(id);
 
-        dataInput.readUTF(); // ignore
+    if (type == null) throw new RuntimeException("Unknown tag id " + id);
 
-        return readValue(type, dataInput, valueDepth);
-    }
+    String key = dataInput.readUTF();
 
-    public static Tag<?> readNamedTag(@NotNull DataInput dataInput, int valueDepth) throws IOException {
-        byte id = dataInput.readByte();
+    return new Tag<>(key, readValue(type, dataInput, valueDepth));
+  }
 
-        if (id == 0) return new Tag<>("", new NBT<>(NBTEnd.VALUE));
+  public static <N extends NBT<?>> @NotNull N readValue(
+      @NotNull TagType<N> type, @NotNull DataInput dataInput) throws IOException {
+    return readValue(type, dataInput, 0);
+  }
 
-        TagType<?> type = TagType.byId(id);
+  @SuppressWarnings("unchecked")
+  public static <N extends NBT<?>> @NotNull N readValue(
+      @NotNull TagType<N> type, @NotNull DataInput dataInput, int valueDepth) throws IOException {
+    NBTIOHandler nbtioHandler = type.nbtioHandler();
 
-        if (type == null) throw new RuntimeException("Unknown tag id " + id);
-
-        String key = dataInput.readUTF();
-
-        return new Tag<>(key, readValue(type, dataInput, valueDepth));
-    }
-
-    public static <N extends NBT<?>> @NotNull N readValue(@NotNull TagType<N> type, @NotNull DataInput dataInput) throws IOException {
-        return readValue(type, dataInput, 0);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <N extends NBT<?>> @NotNull N readValue(@NotNull TagType<N> type, @NotNull DataInput dataInput, int valueDepth) throws IOException {
-        NBTIOHandler nbtioHandler = type.nbtioHandler();
-
-        return (N) nbtioHandler.read(dataInput, valueDepth);
-    }
+    return (N) nbtioHandler.read(dataInput, valueDepth);
+  }
 }
