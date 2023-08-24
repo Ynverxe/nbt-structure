@@ -121,10 +121,63 @@ public class NBT<T> implements Cloneable {
         return (T) new NBT<>(value);
     }
 
-    private static NBTArray<?> checkForPrimitiveArray(Object value, Class clazz) {
-        if (clazz == byte[].class) {
-            return byteArray((byte[]) value);
-        }
+  /**
+   * Try to guess the array content type and return a {@link NBTArray}.
+   *
+   * @param raw The array content
+   * @return a {@link NBTArray} with the contents of the provided array
+   * @throws IllegalArgumentException If the array is empty or the first element is null
+   * @throws InvalidNBTTypeException If the first element is not a valid NBT value, the type cannot
+   *     be converted to an array or the array contains different types of NBT values
+   * @throws NullPointerException If any array contains null values
+   * @see NBTArray NBT Array types
+   */
+  public static @NotNull NBTArray<?> guessArrayByContent(Object[] raw)
+      throws IllegalArgumentException, InvalidNBTTypeException, NullPointerException {
+    if (raw.length == 0 || raw[0] == null) throw new IllegalArgumentException("empty array");
+
+    Object first = raw[0];
+
+    TagType<?> tagType = TagType.matchType(first.getClass());
+
+    if (tagType == null)
+      throw new InvalidNBTTypeException(first.getClass() + " is not a valid NBT type");
+
+    NBTArray<?> array = null;
+
+    if (tagType == TagType.BYTE) {
+      array = new NBTArray<>(new Byte[raw.length]);
+    }
+
+    if (tagType == TagType.INT) {
+      array = new NBTArray<>(new Integer[raw.length]);
+    }
+
+    if (tagType == TagType.LONG) {
+      array = new NBTArray<>(new Long[raw.length]);
+    }
+
+    if (array == null) {
+      throw new InvalidNBTTypeException(
+          "Array content cannot be converted to a numeric array " + tagType);
+    }
+
+    for (Object element : raw) {
+      if (element == null) throw new NullPointerException("Array cannot have null elements");
+
+      if (!Objects.equals(TagType.matchType(element.getClass()), tagType)) {
+        throw new InvalidNBTTypeException(element + " is not of the type " + tagType);
+      }
+    }
+
+    System.arraycopy(raw, 0, array.value, 0, raw.length);
+    return array;
+  }
+
+  private static NBTArray<?> checkForPrimitiveArray(Object value, Class clazz) {
+    if (clazz == byte[].class) {
+      return byteArray((byte[]) value);
+    }
 
         if (clazz == int[].class) {
             return intArray((int[]) value);
