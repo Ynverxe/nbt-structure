@@ -1,5 +1,6 @@
 package com.github.ynverxe.nbt_structure.nbt;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -46,6 +47,24 @@ public class NBTList extends NBT<List<NBT>> implements List<NBT>, Cloneable {
   @Override
   public boolean primitive() {
     return false;
+  }
+
+  @Override
+  public void toSNBT(Appendable appendable) throws IOException {
+    appendable.append("[");
+    Iterator<NBT> iterator = iterator();
+
+    while (iterator.hasNext()) {
+      NBT nbt = iterator.next();
+
+      appendable.append(nbt.toSNBT());
+
+      if (iterator.hasNext()) {
+        appendable.append(",");
+      }
+    }
+
+    appendable.append("]");
   }
 
   @Override

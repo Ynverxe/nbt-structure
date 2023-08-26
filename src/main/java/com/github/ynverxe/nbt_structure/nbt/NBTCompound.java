@@ -1,6 +1,7 @@
 package com.github.ynverxe.nbt_structure.nbt;
 
 import com.github.ynverxe.nbt_structure.nbt.tree.TreeNBTContainer;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,26 @@ public class NBTCompound extends NBT<Map<String, NBT>> implements TreeNBTContain
   @Override
   public boolean primitive() {
     return false;
+  }
+
+  @Override
+  public void toSNBT(Appendable appendable) throws IOException {
+    appendable.append("{");
+    Iterator<Tag<?>> iterator = iterator();
+
+    while (iterator.hasNext()) {
+      Tag<?> tag = iterator.next();
+
+      appendable.append("\"").append(tag.name()).append("\"")
+          .append(":")
+          .append(tag.value().toSNBT());
+
+      if (iterator.hasNext()) {
+        appendable.append(",");
+      }
+    }
+
+    appendable.append("}");
   }
 
   @Override

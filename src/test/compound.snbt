@@ -1,0 +1,16 @@
+{
+  "bytes": [B;1b,2b,3b],
+  "integers": [I;1,2,3],
+  "empty_compound": {},
+  "objects": [
+    {
+      "someText": "blabla"
+    },
+    {
+      "someNumber": 1.18198d
+    },
+    {
+      "emptyList": []
+    }
+  ]
+}

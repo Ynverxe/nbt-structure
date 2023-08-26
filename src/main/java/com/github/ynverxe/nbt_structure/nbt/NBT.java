@@ -1,6 +1,8 @@
 package com.github.ynverxe.nbt_structure.nbt;
 
 import com.github.ynverxe.nbt_structure.nbt.exception.InvalidNBTTypeException;
+import com.github.ynverxe.nbt_structure.nbt.snbt.PrimitiveNBTValueConverter;
+import java.io.IOException;
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,11 +17,14 @@ public class NBT<T> implements Cloneable {
     this.type = Objects.requireNonNull(type, "type");
   }
 
-  public NBT(@NotNull T value) {
+  /**
+   * @throws IllegalArgumentException If the provided value is not a NBT value type
+   */
+  public NBT(@NotNull T value) throws IllegalArgumentException {
     this.value = Objects.requireNonNull(value, "value");
     TagType<NBT<T>> type = TagType.matchType(value.getClass());
     if (type == null)
-      throw new InvalidNBTTypeException(value.getClass() + " is not a valid NBT type");
+      throw new IllegalArgumentException(value.getClass() + " is not a valid NBT type");
     this.type = type;
   }
 
@@ -85,7 +90,21 @@ public class NBT<T> implements Cloneable {
   }
 
   public boolean primitive() {
-    return true;
+    return !type.equals(TagType.END);
+  }
+
+  public void toSNBT(Appendable appendable) throws IOException {
+    appendable.append(PrimitiveNBTValueConverter.convertToSNBT(this));
+  }
+
+  public @NotNull String toSNBT() {
+    StringBuilder builder = new StringBuilder();
+    try {
+      toSNBT(builder);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    return builder.toString();
   }
 
   public static @NotNull <T extends NBT<?>> T byPossibleRawRepresenter(@NotNull Object value) {
