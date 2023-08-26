@@ -29,6 +29,11 @@ public class NBTCompound extends NBT<Map<String, NBT>> implements TreeNBTContain
   }
 
   @Override
+  public boolean primitive() {
+    return false;
+  }
+
+  @Override
   public @NotNull Map<String, Object> normalize() {
     return value.entrySet().stream()
         .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue().normalize()))

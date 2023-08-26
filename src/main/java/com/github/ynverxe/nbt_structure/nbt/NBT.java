@@ -84,6 +84,10 @@ public class NBT<T> implements Cloneable {
     }
   }
 
+  public boolean primitive() {
+    return true;
+  }
+
   public static @NotNull <T extends NBT<?>> T byPossibleRawRepresenter(@NotNull Object value) {
     if (value instanceof NBT) return (T) value;
 

@@ -20,4 +20,9 @@ public class NBTArray<T> extends NBT<T[]> implements Iterable<T> {
   public Iterator<T> iterator() {
     return Arrays.asList(value).iterator();
   }
+
+  @Override
+  public boolean primitive() {
+    return false;
+  }
 }

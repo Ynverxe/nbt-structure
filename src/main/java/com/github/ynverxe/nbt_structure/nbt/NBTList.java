@@ -44,6 +44,11 @@ public class NBTList extends NBT<List<NBT>> implements List<NBT>, Cloneable {
   }
 
   @Override
+  public boolean primitive() {
+    return false;
+  }
+
+  @Override
   public int size() {
     return value.size();
   }
