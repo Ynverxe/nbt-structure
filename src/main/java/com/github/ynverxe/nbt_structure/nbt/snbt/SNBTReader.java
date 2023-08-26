@@ -5,6 +5,7 @@ import static com.github.ynverxe.nbt_structure.nbt.NBTConstants.*;
 import com.github.ynverxe.nbt_structure.nbt.*;
 import com.github.ynverxe.nbt_structure.nbt.exception.MalformedSNBTException;
 import com.github.ynverxe.nbt_structure.nbt.exception.MalformedSNBTNumberException;
+import com.github.ynverxe.nbt_structure.nbt.text.CharStack;
 import java.util.*;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;

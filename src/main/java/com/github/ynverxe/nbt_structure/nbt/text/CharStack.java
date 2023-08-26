@@ -1,4 +1,4 @@
-package com.github.ynverxe.nbt_structure.nbt.snbt;
+package com.github.ynverxe.nbt_structure.nbt.text;
 
 import java.io.Closeable;
 import java.io.IOException;
