@@ -2,7 +2,7 @@ package com.github.ynverxe.nbt_structure.nbt;
 
 import java.util.regex.Pattern;
 
-public class NBTConstants {
+public final class NBTConstants {
 
   public static final Pattern UNQUOTED_KEY_PATTERN = Pattern.compile("[a-zA-Z0-9_\\-\\.\\+]+\\w");
   public static final char COMPOUND_OPENER = '{';
@@ -15,5 +15,7 @@ public class NBTConstants {
   public static final char VALUE_SEPARATOR = ',';
   public static final char DECIMAL_SEPARATOR = '.';
   public static final char SEMICOLON = ';';
+
+  private NBTConstants() {}
 
 }
