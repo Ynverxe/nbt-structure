@@ -19,9 +19,4 @@ jobs:
           package-name: release-please-action
           token: ${{ secrets.GITHUB_TOKEN }}
           include-v-in-tag: false
-      - uses: google-github-actions/release-please-action@v3
-        with:
-          release-type: maven
-          package-name: release-please-action
-          token: ${{ secrets.GITHUB_TOKEN }}
 
