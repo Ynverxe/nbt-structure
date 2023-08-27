@@ -1,5 +1,6 @@
 package com.github.ynverxe.nbt_structure.nbt;
 
+import java.util.Optional;
 import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,5 +44,24 @@ public interface NBTReadable {
     N found = read(key);
 
     return found == null ? null : interpreter.apply(found);
+  }
+
+  default <N extends NBT<?>> @NotNull Optional<N> readOptional(
+      @NotNull String key, @NotNull TagType<N> type) {
+    return Optional.ofNullable(read(key, type));
+  }
+
+  default @NotNull Optional<NBT<?>> readOptional(@NotNull String key) {
+    return Optional.ofNullable(readValue(key));
+  }
+
+  default <T> @NotNull Optional<T> readOptionalValue(
+      @NotNull String key, @NotNull TagType<NBT<T>> type) {
+    return Optional.ofNullable(readValue(key, type));
+  }
+
+  default @NotNull Optional<Object> readOptionalValue(
+      @NotNull String key) {
+    return Optional.ofNullable(readValue(key));
   }
 }
