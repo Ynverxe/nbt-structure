@@ -6,7 +6,7 @@ public final class NBTEnd {
 
   public static final NBTEnd VALUE = new NBTEnd();
 
-  public NBTEnd() {
+  private NBTEnd() {
     if (VALUE != null) throw new UnsupportedOperationException("non-instantiable");
   }
 }
