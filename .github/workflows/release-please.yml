@@ -17,4 +17,4 @@ jobs:
         with:
           release-type: java
           package-name: release-please-action
-          token: ${{ secrets.WORKFLOWS_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
