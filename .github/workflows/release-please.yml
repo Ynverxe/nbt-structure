@@ -19,5 +19,3 @@ jobs:
           package-name: release-please-action
           token: ${{ secrets.GITHUB_TOKEN }}
           include-v-in-tag: false
-          release-as: 1.4.0
-
