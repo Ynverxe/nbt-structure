@@ -1,3 +1,5 @@
+package com.github.ynverxe.nbt_structure;
+
 import com.github.ynverxe.nbt_structure.nbt.NBT;
 import com.github.ynverxe.nbt_structure.nbt.NBTCompound;
 import com.github.ynverxe.nbt_structure.nbt.NBTList;

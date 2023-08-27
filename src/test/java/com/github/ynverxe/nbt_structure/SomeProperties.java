@@ -1,3 +1,5 @@
+package com.github.ynverxe.nbt_structure;
+
 import com.github.ynverxe.nbt_structure.nbt.NBTCompound;
 import java.util.Objects;
 
@@ -22,7 +24,7 @@ public class SomeProperties {
 
   @Override
   public String toString() {
-    return "SomeProperties{"
+    return "com.github.ynverxe.nbt_structure.SomeProperties{"
         + "itemType='"
         + itemType
         + '\''

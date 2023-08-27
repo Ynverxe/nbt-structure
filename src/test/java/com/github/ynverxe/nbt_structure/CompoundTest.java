@@ -1,3 +1,5 @@
+package com.github.ynverxe.nbt_structure;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.github.ynverxe.nbt_structure.nbt.NBT;
